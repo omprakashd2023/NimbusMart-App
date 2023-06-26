@@ -47,11 +47,18 @@ class AuthService {
       httpErrorHandle(
         context: context,
         response: response,
-        onSuccess: () {
+        onSuccess: () async {
           showSnackBar(
             context,
             'Account Created Successfully!',
           );
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          Provider.of<UserProvider>(context, listen: false)
+              .setUser(response.body);
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(Routes.homeRoute, (route) => false);
+          await prefs.setString(
+              'x-auth-token', jsonDecode(response.body)['token']);
         },
       );
     } catch (err) {
@@ -103,7 +110,7 @@ class AuthService {
   }
 
   //Get already signed in user data
-  void autoLogin({
+  Future<bool> autoLogin({
     required BuildContext context,
   }) async {
     try {
@@ -129,6 +136,7 @@ class AuthService {
         });
         Provider.of<UserProvider>(context, listen: false)
             .setUser(userResponse.body);
+        return true;
       }
     } catch (err) {
       showSnackBar(
@@ -136,5 +144,6 @@ class AuthService {
         err.toString(),
       );
     }
+    return false;
   }
 }

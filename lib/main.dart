@@ -14,12 +14,7 @@ import './provider/user_provider.dart';
 void main() async {
   await dotenv.load();
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-      ],
-      child: const NimbusMart(),
-    ),
+    const NimbusMart(),
   );
 }
 
@@ -37,24 +32,45 @@ class _NimbusMartState extends State<NimbusMart> {
 
   @override
   void initState() {
-    _authService.autoLogin(
-      context: context,
-    );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'NimbusMart',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
+      child: Consumer<UserProvider>(
+        builder: (context, userData, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'NimbusMart',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            onGenerateRoute: (settings) => generateRoute(settings),
+            home: userData.isAuth
+                ? const HomePage()
+                : FutureBuilder(
+                    future: _authService.autoLogin(
+                      context: context,
+                    ),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Scaffold(
+                          body: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      } else {
+                        return const AuthPage();
+                      }
+                    },
+                  ),
+          );
+        },
       ),
-      onGenerateRoute: (settings) => generateRoute(settings),
-      home: Provider.of<UserProvider>(context).user.token.isNotEmpty
-          ? const HomePage()
-          : const AuthPage(),
     );
   }
 }
