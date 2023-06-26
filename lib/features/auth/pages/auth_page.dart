@@ -52,6 +52,14 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
+  void signInUser() {
+    authService.signInUser(
+      context: context,
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,7 +174,7 @@ class _AuthPageState extends State<AuthPage> {
                   padding: const EdgeInsets.all(8.0),
                   color: Colors.white,
                   child: Form(
-                    key: _signUpFormKey,
+                    key: _signInFormKey,
                     child: Column(
                       children: [
                         CustomTextfield(
@@ -185,8 +193,12 @@ class _AuthPageState extends State<AuthPage> {
                           height: 10.0,
                         ),
                         CustomButton(
-                          text: 'Sign Up',
-                          onTap: () {},
+                          text: 'Sign In',
+                          onTap: () {
+                            if (_signInFormKey.currentState!.validate()) {
+                              signInUser();
+                            }
+                          },
                         ),
                       ],
                     ),

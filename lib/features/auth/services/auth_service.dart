@@ -1,7 +1,14 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+
+import '../../../provider/user_provider.dart';
+
+import '../../../routes.dart';
 
 import '../../../models/user.dart';
 
@@ -10,6 +17,8 @@ import '../../../common/utils/error_handling.dart';
 import '../../../common/widgets/snackbar.dart';
 
 class AuthService {
+  //Sign Up User
+  final _url = dotenv.env['SERVER_URL'];
   void signUpUser({
     required BuildContext context,
     required String email,
@@ -26,8 +35,7 @@ class AuthService {
         type: '',
         token: '',
       );
-      final url = dotenv.env['SERVER_URL'];
-      final uri = Uri.parse('$url/api/signup');
+      final uri = Uri.parse('$_url/api/signup');
       final response = await http.post(
         uri,
         body: user.toJson(),
@@ -35,11 +43,7 @@ class AuthService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
-      if (kDebugMode) {
-        print(response.body);
-      }
 
-      // ignore: use_build_context_synchronously
       httpErrorHandle(
         context: context,
         response: response,
@@ -51,7 +55,82 @@ class AuthService {
         },
       );
     } catch (err) {
-      print(err.toString());
+      showSnackBar(
+        context,
+        err.toString(),
+      );
+    }
+  }
+
+  //Sign In User
+  void signInUser({
+    required BuildContext context,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final uri = Uri.parse('$_url/api/signin');
+      final response = await http.post(
+        uri,
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      httpErrorHandle(
+        context: context,
+        response: response,
+        onSuccess: () async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          Provider.of<UserProvider>(context, listen: false)
+              .setUser(response.body);
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(Routes.homeRoute, (route) => false);
+          await prefs.setString(
+              'x-auth-token', jsonDecode(response.body)['token']);
+        },
+      );
+    } catch (err) {
+      showSnackBar(
+        context,
+        err.toString(),
+      );
+    }
+  }
+
+  //Get already signed in user data
+  void autoLogin({
+    required BuildContext context,
+  }) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('x-auth-token') ?? '';
+
+      if (token == '') {
+        prefs.setString('x-auth-token', token);
+      }
+
+      final uri = Uri.parse('$_url/api/verify');
+      final tokenResponse = await http.post(uri, headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'x-auth-token': token,
+      });
+
+      final response = jsonDecode(tokenResponse.body);
+      if (response) {
+        final url = Uri.parse('$_url/api/user');
+        final userResponse = await http.get(url, headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': token,
+        });
+        Provider.of<UserProvider>(context, listen: false)
+            .setUser(userResponse.body);
+      }
+    } catch (err) {
       showSnackBar(
         context,
         err.toString(),
