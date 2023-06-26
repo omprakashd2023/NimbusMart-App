@@ -16,6 +16,8 @@ import '../../../common/utils/error_handling.dart';
 
 import '../../../common/widgets/snackbar.dart';
 
+//todo: Refactor OnSuccess Function
+
 class AuthService {
   //Sign Up User
   final _url = dotenv.env['SERVER_URL'];
@@ -56,7 +58,7 @@ class AuthService {
           Provider.of<UserProvider>(context, listen: false)
               .setUser(response.body);
           Navigator.of(context)
-              .pushNamedAndRemoveUntil(Routes.homeRoute, (route) => false);
+              .pushNamedAndRemoveUntil(Routes.bottomBar, (route) => false);
           await prefs.setString(
               'x-auth-token', jsonDecode(response.body)['token']);
         },
@@ -96,7 +98,7 @@ class AuthService {
           Provider.of<UserProvider>(context, listen: false)
               .setUser(response.body);
           Navigator.of(context)
-              .pushNamedAndRemoveUntil(Routes.homeRoute, (route) => false);
+              .pushNamedAndRemoveUntil(Routes.bottomBar, (route) => false);
           await prefs.setString(
               'x-auth-token', jsonDecode(response.body)['token']);
         },

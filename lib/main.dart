@@ -1,3 +1,4 @@
+import 'package:ecommerce/common/widgets/bottom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -5,7 +6,6 @@ import 'package:provider/provider.dart';
 //Routes
 import './routes.dart';
 import './features/auth/pages/auth_page.dart';
-import './features/home/pages/home_page.dart';
 
 import './features/auth/services/auth_service.dart';
 
@@ -51,7 +51,7 @@ class _NimbusMartState extends State<NimbusMart> {
             ),
             onGenerateRoute: (settings) => generateRoute(settings),
             home: userData.isAuth
-                ? const HomePage()
+                ? const BottomBar()
                 : FutureBuilder(
                     future: _authService.autoLogin(
                       context: context,
