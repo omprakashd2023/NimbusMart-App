@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../widgets/snackbar.dart';
+import './utils.dart';
 
 void httpErrorHandle({
   required http.Response response,

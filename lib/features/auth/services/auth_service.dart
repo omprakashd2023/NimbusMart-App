@@ -14,7 +14,7 @@ import '../../../models/user.dart';
 
 import '../../../common/utils/error_handling.dart';
 
-import '../../../common/widgets/snackbar.dart';
+import '../../../common/utils/utils.dart';
 
 //todo: Refactor OnSuccess Function
 
@@ -55,10 +55,11 @@ class AuthService {
             'Account Created Successfully!',
           );
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          Provider.of<UserProvider>(context, listen: false)
-              .setUser(response.body);
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil(Routes.bottomBar, (route) => false);
+          final user = Provider.of<UserProvider>(context, listen: false);
+          user.setUser(response.body);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              user.user.type == 'user' ? Routes.bottomBar : Routes.adminRoute,
+              (route) => false);
           await prefs.setString(
               'x-auth-token', jsonDecode(response.body)['token']);
         },
@@ -95,10 +96,11 @@ class AuthService {
         response: response,
         onSuccess: () async {
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          Provider.of<UserProvider>(context, listen: false)
-              .setUser(response.body);
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil(Routes.bottomBar, (route) => false);
+          final user = Provider.of<UserProvider>(context, listen: false);
+          user.setUser(response.body);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              user.user.type == 'user' ? Routes.bottomBar : Routes.adminRoute,
+              (route) => false);
           await prefs.setString(
               'x-auth-token', jsonDecode(response.body)['token']);
         },

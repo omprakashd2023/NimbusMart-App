@@ -35,7 +35,7 @@ class AccountPage extends StatelessWidget {
                   'assets/images/logo.png',
                   width: 120,
                   height: 45.0,
-                  color: Colors.black,
+                  // color: Colors.black,
                 ),
               ),
               Container(

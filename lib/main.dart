@@ -1,4 +1,3 @@
-import 'package:ecommerce/common/widgets/bottom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +9,9 @@ import './features/auth/pages/auth_page.dart';
 import './features/auth/services/auth_service.dart';
 
 import './provider/user_provider.dart';
+
+import './common/widgets/bottom_appbar.dart';
+import './features/admin/pages/admin_page.dart';
 
 void main() async {
   await dotenv.load();
@@ -51,7 +53,9 @@ class _NimbusMartState extends State<NimbusMart> {
             ),
             onGenerateRoute: (settings) => generateRoute(settings),
             home: userData.isAuth
-                ? const BottomBar()
+                ? userData.user.type == 'user'
+                    ? const BottomBar()
+                    : const AdminPage()
                 : FutureBuilder(
                     future: _authService.autoLogin(
                       context: context,
