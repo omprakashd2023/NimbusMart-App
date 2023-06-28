@@ -24,7 +24,7 @@ class _AddProductPageState extends State<AddProductPage> {
   final TextEditingController priceController = TextEditingController();
   final TextEditingController quantityController = TextEditingController();
 
-  final AdminServices _adminServices = AdminServices();
+  final AdminService _adminServices = AdminService();
 
   String category = 'Mobiles';
 

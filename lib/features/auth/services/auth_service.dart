@@ -6,7 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
-import '../../../provider/user_provider.dart';
+import '../../../provider/user.dart';
 
 import '../../../routes.dart';
 

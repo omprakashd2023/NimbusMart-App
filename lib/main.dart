@@ -8,7 +8,8 @@ import './features/auth/pages/auth_page.dart';
 
 import './features/auth/services/auth_service.dart';
 
-import './provider/user_provider.dart';
+import './provider/user.dart';
+import './provider/product.dart';
 
 import './common/widgets/bottom_appbar.dart';
 import './features/admin/pages/admin_page.dart';
@@ -41,7 +42,12 @@ class _NimbusMartState extends State<NimbusMart> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(
+          create: (_) => UserProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ProductProvider(),
+        ),
       ],
       child: Consumer<UserProvider>(
         builder: (context, userData, child) {

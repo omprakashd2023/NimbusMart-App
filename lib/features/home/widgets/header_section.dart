@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 class HeaderSection extends StatelessWidget {
   final String name;
   final String address;
+  final String searchText;
+  final bool isProductEmpty;
   const HeaderSection({
     super.key,
-    required this.name,
-    required this.address,
+    this.name = '',
+    this.address = '',
+    this.searchText = 'Nothing',
+    this.isProductEmpty = false,
   });
 
   @override
@@ -30,9 +34,11 @@ class HeaderSection extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(
-            Icons.location_on_outlined,
-            color: Colors.white,
+          Icon(
+            isProductEmpty
+                ? Icons.not_interested_sharp
+                : Icons.location_on_outlined,
+            color: isProductEmpty ? Colors.red : Colors.white,
             size: 20.0,
           ),
           Expanded(
@@ -40,25 +46,36 @@ class HeaderSection extends StatelessWidget {
               padding: const EdgeInsets.only(
                 left: 5.0,
               ),
-              child: Text(
-                'Delivery to $name - $address',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
+              child: searchText == 'Nothing'
+                  ? Text(
+                      'Delivery to $name - $address',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  : Text(
+                      !isProductEmpty
+                          ? 'Search results for "$searchText"'
+                          : 'No results found for "$searchText"',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(
-              left: 5.0,
-              top: 2.0,
-            ),
-            child: Icon(
-              Icons.arrow_drop_down_outlined,
-              size: 18.0,
-            ),
-          )
+          if (!isProductEmpty)
+            const Padding(
+              padding: EdgeInsets.only(
+                left: 5.0,
+                top: 2.0,
+              ),
+              child: Icon(
+                Icons.arrow_drop_down_outlined,
+                size: 18.0,
+              ),
+            )
         ],
       ),
     );

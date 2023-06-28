@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../provider/user_provider.dart';
+import '../../../provider/user.dart';
 
 class HeaderSection extends StatelessWidget {
   const HeaderSection({super.key});

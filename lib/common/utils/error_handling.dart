@@ -12,16 +12,19 @@ void httpErrorHandle({
 }) {
   switch (response.statusCode) {
     case 200:
-      print('1');
       onSuccess();
+      print(1);
       break;
     case 400:
+      print(2);
       showSnackBar(context, jsonDecode(response.body)['message']);
       break;
     case 500:
       showSnackBar(context, jsonDecode(response.body)['reason']);
+      print(3);
       break;
     default:
+      print(4);
       showSnackBar(context, response.body);
   }
 }

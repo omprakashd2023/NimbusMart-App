@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../../routes.dart';
+
 class CategorySection extends StatelessWidget {
   CategorySection({super.key});
+
+  void navigateToCategoryDealsPage(BuildContext context, int index) {
+    Navigator.of(context).pushNamed(
+      Routes.categoryDeals,
+      arguments: categoryImages[index]['title'],
+    );
+  }
 
   final List<Map<String, String>> categoryImages = [
     {
@@ -56,7 +65,7 @@ class CategorySection extends StatelessWidget {
         itemExtent: 75,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () {},
+            onTap: () => navigateToCategoryDealsPage(context, index),
             child: Column(
               children: [
                 Container(

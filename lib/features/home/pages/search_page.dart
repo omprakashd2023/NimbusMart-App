@@ -1,30 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
+import '../../../models/product.dart';
 import '../widgets/header_section.dart';
-import '../widgets/category_section.dart';
-import '../widgets/banner_section.dart';
-import '../widgets/hero_section.dart';
+import '../widgets/search_product.dart';
 
-import '../../../provider/user.dart';
+import '../services/home_services.dart';
 
-import '../../../routes.dart';
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class SearchPage extends StatefulWidget {
+  final String searchText;
+  const SearchPage({
+    super.key,
+    required this.searchText,
+  });
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _SearchPageState extends State<SearchPage> {
   final TextEditingController searchController = TextEditingController();
-  void navigateToSearchPage(String searchText) {
-    Navigator.of(context).pushNamed(
-      Routes.searchRoute,
-      arguments: searchText,
-    );
-  }
+  bool isSearching = false;
 
   @override
   void dispose() {
@@ -32,9 +27,35 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  List<Product> products = [];
+  final HomeService _homeServices = HomeService();
+
+  @override
+  void initState() {
+    setState(() {
+      searchController.text = widget.searchText;
+    });
+    super.initState();
+    fetchSearchedProduct();
+  }
+
+  fetchSearchedProduct([String? searchText]) async {
+    setState(() {
+      isSearching = true;
+    });
+    print(searchText);
+    print(widget.searchText);
+    products = await _homeServices.fetchSearchedProducts(
+      context: context,
+      searchText: searchText ?? widget.searchText,
+    );
+    setState(() {
+      isSearching = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
@@ -56,19 +77,15 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Container(
+                child: SizedBox(
                   height: 42.0,
-                  margin: const EdgeInsets.only(
-                    left: 15.0,
-                  ),
                   child: Material(
                     borderRadius: BorderRadius.circular(7.0),
                     elevation: 1.0,
                     child: TextFormField(
                       controller: searchController,
                       onFieldSubmitted: (searchText) {
-                        navigateToSearchPage(searchText);
-                        searchController.clear();
+                        fetchSearchedProduct(searchText);
                       },
                       decoration: const InputDecoration(
                         prefixIcon: Padding(
@@ -128,32 +145,36 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            //Address Section
-            HeaderSection(
-              name: user.user.name,
-              address: user.user.address,
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            //Category Section
-            CategorySection(),
-            const SizedBox(
-              height: 10.0,
-            ),
-            //Carousel Listing Offers
-            const BannerSection(),
-            const SizedBox(
-              height: 10.0,
-            ),
-            //Deal of the day section
-            const HeroSection(),
-          ],
-        ),
-      ),
+      body: isSearching
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : products.isEmpty && searchController.text.isNotEmpty
+              ? HeaderSection(
+                  searchText: searchController.text,
+                  isProductEmpty: true,
+                )
+              : Column(
+                  children: [
+                    HeaderSection(
+                      searchText: searchController.text,
+                    ),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {},
+                            child: SearchedProduct(
+                              product: products[index],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
     );
   }
 }
