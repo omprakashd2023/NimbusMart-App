@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../services/home_services.dart';
 import '../widgets/header_section.dart';
 import '../widgets/category_section.dart';
 import '../widgets/banner_section.dart';
@@ -18,12 +19,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final HomeService _homeServices = HomeService();
   final TextEditingController searchController = TextEditingController();
   void navigateToSearchPage(String searchText) {
     Navigator.of(context).pushNamed(
       Routes.searchRoute,
       arguments: searchText,
     );
+  }
+
+  @override
+  void initState() {
+    _homeServices.fetchAllProducts(context: context);
+    super.initState();
   }
 
   @override

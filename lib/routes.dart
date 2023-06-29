@@ -5,6 +5,7 @@ import './features/auth/pages/auth_page.dart';
 import './features/home/pages/home_page.dart';
 import './common/widgets/bottom_appbar.dart';
 import './features/home/pages/search_page.dart';
+import './features/home/pages/product_detail_page.dart';
 import './features/admin/pages/admin_page.dart';
 import './features/admin/pages/add_product_page.dart';
 import 'features/home/pages/category_products_page.dart';
@@ -14,6 +15,7 @@ class Routes {
   static const String authRoute = '/auth-page';
   static const String homeRoute = '/home-page';
   static const String searchRoute = '/search-page';
+  static const String productDetailRoute = '/product-detail-page';
   static const String adminRoute = '/admin-page';
   static const String bottomBar = '/bottom-bar';
   static const String addProduct = '/add-product';
@@ -21,7 +23,6 @@ class Routes {
 }
 
 Route<dynamic> generateRoute(RouteSettings settings) {
-  final args = settings.arguments as String;
   switch (settings.name) {
     case Routes.authRoute:
       return MaterialPageRoute<dynamic>(
@@ -44,9 +45,18 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         settings: settings,
       );
     case Routes.searchRoute:
+      final args = settings.arguments as String;
       return MaterialPageRoute<dynamic>(
         builder: (_) => SearchPage(
           searchText: args,
+        ),
+        settings: settings,
+      );
+    case Routes.productDetailRoute:
+      final args = settings.arguments as String;
+      return MaterialPageRoute<dynamic>(
+        builder: (_) => ProductDetailPage(
+          productId: args,
         ),
         settings: settings,
       );
@@ -56,6 +66,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         settings: settings,
       );
     case Routes.categoryDeals:
+      final args = settings.arguments as String;
       return MaterialPageRoute<dynamic>(
         builder: (_) => CategoryDealsPage(
           categoryName: args,

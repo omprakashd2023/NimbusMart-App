@@ -127,11 +127,13 @@ class AdminService {
         },
       );
       final deletedProduct = jsonDecode(response.body);
-      print(deletedProduct["product"]);
       httpErrorHandle(
         response: response,
         context: context,
         onSuccess: () {
+          Provider.of<ProductProvider>(context, listen: false).removeProduct(
+            product: deletedProduct["product"],
+          );
           showSnackBar(context, 'Product Deleted Successfully!');
         },
       );

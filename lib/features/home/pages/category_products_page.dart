@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../models/product.dart';
 
 import '../../../provider/product.dart';
+import '../../../routes.dart';
 
 class CategoryDealsPage extends StatefulWidget {
   final String categoryName;
@@ -80,7 +81,7 @@ class _CategoryDealsPageState extends State<CategoryDealsPage> {
                       child: GridView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.only(left: 15),
-                        itemCount: 5,
+                        itemCount: productList.length,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 1,
@@ -90,6 +91,12 @@ class _CategoryDealsPageState extends State<CategoryDealsPage> {
                         itemBuilder: (context, index) {
                           final product = productList[index];
                           return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                Routes.productDetailRoute,
+                                arguments: product.id,
+                              );
+                            },
                             child: Column(
                               children: [
                                 SizedBox(

@@ -43,12 +43,11 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       isSearching = true;
     });
-    print(searchText);
-    print(widget.searchText);
     products = await _homeServices.fetchSearchedProducts(
       context: context,
       searchText: searchText ?? widget.searchText,
     );
+    print(products);
     setState(() {
       isSearching = false;
     });
@@ -164,11 +163,8 @@ class _SearchPageState extends State<SearchPage> {
                       child: ListView.builder(
                         itemCount: products.length,
                         itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {},
-                            child: SearchedProduct(
-                              product: products[index],
-                            ),
+                          return SearchedProduct(
+                            product: products[index],
                           );
                         },
                       ),
