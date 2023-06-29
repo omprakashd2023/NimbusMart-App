@@ -3,10 +3,16 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 
 class ProductProvider with ChangeNotifier {
-  List<Product> _products = [];
+  final List<Product> _products = [];
 
   void addProduct({required Product product}) {
-    _products.add(product);
+    final index = _products.indexWhere((prod) => prod.id == product.id);
+    if (index == -1) {
+      _products.add(product);
+    } else {
+      _products.removeAt(index);
+      _products.insert(index, product);
+    }
     notifyListeners();
   }
 
@@ -22,12 +28,12 @@ class ProductProvider with ChangeNotifier {
   }
 
   void setProducts({required List<Product> products}) {
-    _products = products;
+    print(products[1].avgRating);
     notifyListeners();
   }
 
-  Product getProduct({required int index}) {
-    return _products[index];
+  Product getProductById({required String id}) {
+    return _products.firstWhere((prod) => prod.id == id);
   }
 
   List<Product> get allProducts {
