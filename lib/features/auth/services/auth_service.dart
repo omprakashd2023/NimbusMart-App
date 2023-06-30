@@ -16,11 +16,20 @@ import '../../../common/utils/error_handling.dart';
 
 import '../../../common/utils/utils.dart';
 
-//todo: Refactor OnSuccess Function
-
 class AuthService {
   //Sign Up User
   final _url = dotenv.env['SERVER_URL'];
+
+  void _onSuccess(http.Response response, BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final user = Provider.of<UserProvider>(context, listen: false);
+    user.setUser(response.body);
+    Navigator.of(context).pushNamedAndRemoveUntil(
+        user.user.type == 'user' ? Routes.bottomBar : Routes.adminRoute,
+        (route) => false);
+    await prefs.setString('x-auth-token', jsonDecode(response.body)['token']);
+  }
+
   void signUpUser({
     required BuildContext context,
     required String email,
@@ -54,14 +63,7 @@ class AuthService {
             context,
             'Account Created Successfully!',
           );
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          final user = Provider.of<UserProvider>(context, listen: false);
-          user.setUser(response.body);
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              user.user.type == 'user' ? Routes.bottomBar : Routes.adminRoute,
-              (route) => false);
-          await prefs.setString(
-              'x-auth-token', jsonDecode(response.body)['token']);
+          _onSuccess(response, context);
         },
       );
     } catch (err) {
@@ -94,15 +96,8 @@ class AuthService {
       httpErrorHandle(
         context: context,
         response: response,
-        onSuccess: () async {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          final user = Provider.of<UserProvider>(context, listen: false);
-          user.setUser(response.body);
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              user.user.type == 'user' ? Routes.bottomBar : Routes.adminRoute,
-              (route) => false);
-          await prefs.setString(
-              'x-auth-token', jsonDecode(response.body)['token']);
+        onSuccess: () {
+          _onSuccess(response, context);
         },
       );
     } catch (err) {

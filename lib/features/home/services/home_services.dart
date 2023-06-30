@@ -11,6 +11,7 @@ import '../../../common/utils/utils.dart';
 
 import '../../../models/product.dart';
 
+import '../../../models/rating.dart';
 import '../../../provider/product.dart';
 import '../../../provider/user.dart';
 
@@ -106,6 +107,18 @@ class HomeService {
     var product = Provider.of<ProductProvider>(context, listen: false)
         .getProductById(id: productId);
     if (product.avgRating != 0) {
+      int index = product.rating!.indexWhere(
+        (element) => element.userId == userProvider.user.id,
+      );
+      if(index == -1){
+        product.rating!.add(
+          Rating(
+            userId: userProvider.user.id,
+            rating: rating,
+            reviewedAt: DateTime.fromMillisecondsSinceEpoch(reviewedAt),
+          ),
+        );
+      }
       for (int j = 0; j < product.rating!.length; j++) {
         if (product.rating![j].userId == userProvider.user.id) {
           sum += rating;
@@ -156,5 +169,46 @@ class HomeService {
       print(err.toString());
       showSnackBar(context, err.toString());
     }
+  }
+
+  Future<Product> fetchDealOfTheDay({required BuildContext context}) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    Product product = Product(
+      id: "",
+      productName: "",
+      description: "",
+      price: 0,
+      avgRating: 0,
+      rating: [],
+      images: [],
+      quantity: 0,
+      category: "",
+    );
+    try {
+      final url = Uri.parse('$_url/api/product/deal-of-the-day');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': userProvider.user.token,
+        },
+      );
+      final dealProduct = jsonDecode(response.body);
+      httpErrorHandle(
+        response: response,
+        context: context,
+        onSuccess: () {
+          product = Product.fromJson(
+            jsonEncode(
+              dealProduct["product"],
+            ),
+          );
+        },
+      );
+    } catch (err) {
+      print(err.toString());
+      showSnackBar(context, err.toString());
+    }
+    return product;
   }
 }

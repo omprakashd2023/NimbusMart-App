@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 
 class ProductProvider with ChangeNotifier {
-  final List<Product> _products = [];
+  List<Product> _products = [];
 
   void addProduct({required Product product}) {
     final index = _products.indexWhere((prod) => prod.id == product.id);
@@ -28,7 +28,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   void setProducts({required List<Product> products}) {
-    print(products[1].avgRating);
+    _products = products;
     notifyListeners();
   }
 
